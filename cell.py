@@ -23,7 +23,7 @@ class Cell:
                            width=12,
                            height=4,
                            )
-        button.bind("<Button-1>", self.left_click)
-        button.bind("<Button-3>", self.right_click)
+        # button.bind("<Button-1>", self.left_click)
+        # button.bind("<Button-3>", self.right_click)
         
         self.cell_button_object = button

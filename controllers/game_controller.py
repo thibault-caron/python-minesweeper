@@ -38,7 +38,7 @@ class GameController:
             self.view.update_cell(row, col, "B", is_revealed=True)
             self.view.show_game_over()
         else:
-            self.reveal_cell(row, col)
+            self.reveal_cells(row, col)
             self.check_win_condition()
 
     def check_win_condition(self):
@@ -66,20 +66,21 @@ class GameController:
             self.view.update_cell(row, col, "F")
         self.view.update_menu(self.menu.flags_left, self.menu.timer)
 
-    def reveal_cell(self, row, col):
+    def reveal_cells(self, row: int, col: int) -> None:
+        """
+        Reveal the cell at (row, col). If the cell has no adjacent mines, 
+        recursively reveal its neighbors.
+        """
         cell = self.board.cell_list[row][col]
         if cell.is_revealed or cell.is_flagged:
             return
+
         cell.is_revealed = True
         self.view.update_cell(row, col, cell.adjacent_mines if cell.adjacent_mines > 0 else "", is_revealed=True)
-        if cell.adjacent_mines == 0:
-            self.reveal_adjacent_cells(row, col)
 
-    def reveal_adjacent_cells(self, row, col):
-        directions = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
-        for dr, dc in directions:
-            r, c = row + dr, col + dc
-            if 0 <= r < self.board.rows and 0 <= c < self.board.cols:
-                adjacent_cell = self.board.cell_list[r][c]
-                if not adjacent_cell.is_revealed and not adjacent_cell.is_flagged:
-                    self.reveal_cell(r, c)  # Recursive call
+        if cell.adjacent_mines == 0 and not cell.is_mine:
+            directions = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
+            for dr, dc in directions:
+                r, c = row + dr, col + dc
+                if 0 <= r < self.board.rows and 0 <= c < self.board.cols:
+                    self.reveal_cells(r, c)

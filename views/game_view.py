@@ -49,7 +49,10 @@ class GameView(ctk.CTk):
     def create_board(self, rows, cols, click_handler, right_click_handler):
         """
         Create a grid of buttons for the game board.
-        
+        :param rows: int - Number of rows in the grid.
+        :param cols: int - Number of columns in the grid.
+        :param click_handler: Callable - Function to handle left-click events.
+        :param right_click_handler: Callable - Function to handle right-click events.
         """
         for row in range(rows):
             for col in range(cols):
@@ -73,12 +76,14 @@ class GameView(ctk.CTk):
             button.configure(text=text)
 
     def show_game_over(self):
+        """Display a game over message and disable all buttons."""
         for button in self.grid_buttons.values():
             button.configure(state="disabled")
         game_over_label = ctk.CTkLabel(self.grid_frame, text="Game Over!", font=("Arial", 24))
         game_over_label.grid(row=0, column=0, columnspan=len(self.grid_buttons), pady=10)
 
     def show_game_won(self):
+        """Display a game won message and disable all buttons."""
         for button in self.grid_buttons.values():
             button.configure(state="disabled")
         game_won_label = ctk.CTkLabel(self.grid_frame, text="You Won!", font=("Arial", 24))

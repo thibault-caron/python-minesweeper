@@ -4,7 +4,7 @@ import random
 
 class Cell:
     all = []
-            
+    cell_counter_object = None        
     def __init__(self, x, y, is_mine = False):
         
         self.is_mine = is_mine
@@ -30,11 +30,25 @@ class Cell:
         button.bind("<Button-3>", self.right_click)
         
         self.cell_button_object = button
+    
+    @staticmethod    
+    def counter_label(location):
+        counter = tk.Label(
+            location,
+            text=f"Cells Left: {CELLS_COUNT}",
+            bg="black",
+            fg="lime",
+            font=("Retro gaming", 20)
+            )
+        Cell.cell_counter_object = counter
         
     def left_click(self, event):
         if self.is_mine:
             self.show_mine()
         else:
+            if self.surronded_cells_mine_count == 0:
+                for cell in self.get_surronded_cells:
+                    cell.show_number()
             self.show_number()
             
     def get_cell_by_axis(self, x, y):

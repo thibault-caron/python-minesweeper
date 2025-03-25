@@ -42,7 +42,14 @@ for x in range(GRID_SIZE):
         cell.cell_button_object.grid(
             column=x, row=y,
         )
-        
+
+# show counter label in top frame
+Cell.counter_label(top_frame)
+Cell.cell_counter_object.grid(
+    column=0, row=0
+    )
+
+# randomize the mines        
 Cell.randomize_mine()
 
 

@@ -23,10 +23,3 @@ class Grid:
                     column=x,
                     row=y,
                     )
-
-        cell = Cell()
-        cell.cell_button_object(center_frame)
-        cell.cell_button_object.grid(
-            column=x,
-            row=x,
-            )

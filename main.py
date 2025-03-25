@@ -27,12 +27,6 @@ for x in range(GRID_SIZE):
             column=x, row=y,
             )
 
-# cell = Cell()
-# cell.cell_button_object(center_frame)
-# cell.cell_button_object.grid(
-#     column=x, row=x,
-#     )
-
 if __name__ == "__main__":
     main()
     # Grid.create_grid()

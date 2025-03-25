@@ -3,11 +3,21 @@ from models.menu import Menu
 
 class GameController:
     def __init__(self, view):
+        """
+        Initialize the game controller.
+
+        :param view: GameView - The game view instance.
+        """
         self.view = view
         self.board = None
         self.menu = None
 
-    def start_game(self, difficulty="easy"):
+    def start_game(self, difficulty="easy") -> None:
+        """
+        Start a new game with the specified difficulty.
+
+        :param difficulty: str - Difficulty level ("easy", "medium", or "hard").
+        """
         difficulty_settings = {
             "easy": (9, 9, 10),
             "medium": (16, 16, 40),
@@ -19,14 +29,26 @@ class GameController:
         self.view.create_menu(self.menu, self.reset_game)
         self.view.create_board(rows, cols, self.handle_cell_click, self.handle_cell_right_click)
 
-    def reset_game(self, difficulty=None):
+    def reset_game(self, difficulty=None) -> None:
+        """
+        Reset the game to its initial state.
+
+        :param difficulty: Difficulty level to reset to. Defaults to the current difficulty.
+        :type difficulty: str, optional
+        """
         if difficulty is None:
             difficulty = self.menu.difficulty  # Use the current difficulty if not provided
         self.menu.stop_timer()
         self.view.clear_view()  # Clear the view before resetting
         self.start_game(difficulty)
 
-    def handle_cell_click(self, row, col):
+    def handle_cell_click(self, row, col) -> None:
+        """
+        Handle a left-click event on a cell.
+
+        :param row: int - Row index of the clicked cell.
+        :param col: int - Column index of the clicked cell.
+        """
         if self.menu.timer == 0:
             self.menu.start_timer() 
             self.board._place_mines(row, col)
@@ -41,14 +63,23 @@ class GameController:
             self.reveal_cells(row, col)
             self.check_win_condition()
 
-    def check_win_condition(self):
+    def check_win_condition(self) -> None:
+        """
+        Check if the player has won the game.
+        """
         for row in self.board.cell_list:
             for cell in row:
                 if not cell.is_mine and not cell.is_revealed:
                     return
         self.view.show_game_won() 
 
-    def handle_cell_right_click(self, row, col):
+    def handle_cell_right_click(self, row, col) -> None:
+        """
+        Handle a right-click event on a cell.
+
+        :param row: int - Row index of the clicked cell.
+        :param col: int - Column index of the clicked cell.
+        """
         cell = self.board.cell_list[row][col]
         if cell.is_revealed:
             return
@@ -68,8 +99,11 @@ class GameController:
 
     def reveal_cells(self, row: int, col: int) -> None:
         """
-        Reveal the cell at (row, col). If the cell has no adjacent mines, 
+        Reveal the cell at the specified position. If the cell has no adjacent mines,
         recursively reveal its neighbors.
+
+        :param row: int - Row index of the cell to reveal.
+        :param col: int - Column index of the cell to reveal.
         """
         cell = self.board.cell_list[row][col]
         if cell.is_revealed or cell.is_flagged:

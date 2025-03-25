@@ -2,26 +2,37 @@ import customtkinter as ctk
 from models.menu import Menu
 
 class GameView(ctk.CTk):
+    """
+    Represents the graphical user interface for the Minesweeper game.
+    """
     def __init__(self):
         super().__init__()
         self.title("Minesweeper")
         self.grid_buttons = {}
 
         # Create main layout containers
-        self.menu_frame = ctk.CTkFrame(self, height=150)  # Fixed height for the menu
+        self.menu_frame = ctk.CTkFrame(self, height=150)
         self.menu_frame.pack(fill="x", side="top")
 
-        self.grid_frame = ctk.CTkFrame(self)  # Remaining space for the grid
+        self.grid_frame = ctk.CTkFrame(self)
         self.grid_frame.pack(fill="both", expand=True, side="top")
 
-    def clear_view(self):
-        """Clear all elements from the grid frames."""
+    def clear_view(self) -> None:
+        """
+        Clear all elements from the grid frame and reset the grid buttons.
+        """
         for widget in self.grid_frame.winfo_children():
             widget.destroy()
         self.grid_buttons.clear()
 
-    def create_menu(self, menu, reset_game):
-        self.clear_view()  # Clear old elements before creating new ones
+    def create_menu(self, menu, reset_game) -> None:
+        """
+        Create the menu interface with flags, difficulty selection, reset button, and timer.
+
+        :param menu: Menu - The menu model instance.
+        :param reset_game: Callable - Callback function to reset the game.
+        """
+        self.clear_view()  
         self.flags_label = ctk.CTkLabel(self.menu_frame, text=f"Flags Left: {menu.flags_left}")
         self.flags_label.grid(row=0, column=0, padx=10)
 
@@ -39,16 +50,29 @@ class GameView(ctk.CTk):
         self.timer_label = ctk.CTkLabel(self.menu_frame, text=f"Timer: {menu.timer}")
         self.timer_label.grid(row=0, column=2, padx=10)
 
-    def _on_difficulty_change(self, difficulty, reset_game):
+    def _on_difficulty_change(self, difficulty, reset_game) -> None:
+        """
+        Handle difficulty change events and reset the game with the selected difficulty.
+
+        :param difficulty: str - The selected difficulty level.
+        :param reset_game: Callable - Callback function to reset the game.
+        """
         reset_game(difficulty)
 
-    def update_menu(self, flags_left, timer):
+    def update_menu(self, flags_left, timer) -> None:
+        """
+        Update the menu display with the current number of flags left and the timer value.
+
+        :param flags_left: int - Number of flags left.
+        :param timer: int - Current timer value.
+        """
         self.flags_label.configure(text=f"Flags Left: {flags_left}")
         self.timer_label.configure(text=f"Timer: {timer}")
 
-    def create_board(self, rows, cols, click_handler, right_click_handler):
+    def create_board(self, rows, cols, click_handler, right_click_handler) -> None:
         """
-        Create a grid of buttons for the game board.
+        Create the game board with buttons for each cell.
+
         :param rows: int - Number of rows in the grid.
         :param cols: int - Number of columns in the grid.
         :param click_handler: Callable - Function to handle left-click events.
@@ -64,7 +88,15 @@ class GameView(ctk.CTk):
                 button.grid(row=row, column=col, padx=2, pady=2)
                 self.grid_buttons[(row, col)] = button
 
-    def update_cell(self, row, col, text, is_revealed=False):
+    def update_cell(self, row, col, text, is_revealed=False) -> None:
+        """
+        Update the appearance of a cell on the game board.
+
+        :param row: int - Row index of the cell.
+        :param col: int - Column index of the cell.
+        :param text: str - Text to display on the cell.
+        :param is_revealed: bool - Whether the cell is revealed.
+        """
         button = self.grid_buttons[(row, col)]
         if is_revealed:
             button.configure(
@@ -75,15 +107,19 @@ class GameView(ctk.CTk):
         else:
             button.configure(text=text)
 
-    def show_game_over(self):
-        """Display a game over message and disable all buttons."""
+    def show_game_over(self) -> None:
+        """
+        Display a game over message and disable all buttons on the board.
+        """
         for button in self.grid_buttons.values():
             button.configure(state="disabled")
         game_over_label = ctk.CTkLabel(self.grid_frame, text="Game Over!", font=("Arial", 24))
         game_over_label.grid(row=0, column=0, columnspan=len(self.grid_buttons), pady=10)
 
-    def show_game_won(self):
-        """Display a game won message and disable all buttons."""
+    def show_game_won(self) -> None:
+        """
+        Display a game won message and disable all buttons on the board.
+        """
         for button in self.grid_buttons.values():
             button.configure(state="disabled")
         game_won_label = ctk.CTkLabel(self.grid_frame, text="You Won!", font=("Arial", 24))

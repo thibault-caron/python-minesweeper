@@ -42,6 +42,8 @@ for x in range(GRID_SIZE):
         cell.cell_button_object.grid(
             column=x, row=y,
         )
+        
+Cell.randomize_mine()
 
 
 if __name__ == "__main__":

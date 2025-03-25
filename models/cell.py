@@ -9,4 +9,4 @@ class Cell:
         self.adjacent_mines: int = 0
 
     def __repr__(self) -> str:
-        return f"Cell({self.row}, {self.col}, Mine={self.is_mine}, Flagged={self.is_flagged}, Unsure={self.is_unsure}, Adjacent Mines={self.adjacent_mines})"
+        return f"Cell({self.row}, {self.col}, Mine={self.is_mine}, Flagged={self.is_flagged}, Unsure={self.is_unsure})"

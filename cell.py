@@ -24,7 +24,7 @@ class Cell:
                            width=12,
                            height=4,
                            relief="raised",
-                           borderwidth=5
+                           borderwidth=8
                            )
         button.bind("<Button-1>", self.left_click)
         button.bind("<Button-3>", self.right_click)

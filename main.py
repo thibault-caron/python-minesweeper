@@ -1,7 +1,10 @@
 from views.game_view import GameView
 from controllers.game_controller import GameController
 
-def main():
+def main() -> None:
+    """
+    Entry point for the Minesweeper application.
+    """
     view = GameView()
     controller = GameController(view)
     controller.start_game()

@@ -8,7 +8,7 @@ class Menu:
     :param mines: int - Number of mines in the game.
     :param difficulty: str - Difficulty level ("easy", "medium", or "hard").
     """
-    def __init__(self, mines, difficulty="easy"):
+    def __init__(self, mines: int, difficulty: str = "easy") -> None:
         self.flags_left = mines
         self.difficulty = difficulty
         self.timer = 0

@@ -1,11 +1,12 @@
 import customtkinter as ctk
+from typing import Callable
 from models.menu import Menu
 
 class GameView(ctk.CTk):
     """
     Represents the graphical user interface for the Minesweeper game.
     """
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self.title("Minesweeper")
         self.grid_buttons = {}
@@ -25,12 +26,12 @@ class GameView(ctk.CTk):
             widget.destroy()
         self.grid_buttons.clear()
 
-    def create_menu(self, menu, reset_game) -> None:
+    def create_menu(self, menu: Menu, reset_game: Callable[[str], None]) -> None:
         """
         Create the menu interface with flags, difficulty selection, reset button, and timer.
 
         :param menu: Menu - The menu model instance.
-        :param reset_game: Callable - Callback function to reset the game.
+        :param reset_game: Callable[[str], None] - Callback function to reset the game.
         """
         self.clear_view()  
         self.flags_label = ctk.CTkLabel(self.menu_frame, text=f"Flags Left: {menu.flags_left}")
@@ -50,16 +51,16 @@ class GameView(ctk.CTk):
         self.timer_label = ctk.CTkLabel(self.menu_frame, text=f"Timer: {menu.timer}")
         self.timer_label.grid(row=0, column=2, padx=10)
 
-    def _on_difficulty_change(self, difficulty, reset_game) -> None:
+    def _on_difficulty_change(self, difficulty: str, reset_game: Callable[[str], None]) -> None:
         """
         Handle difficulty change events and reset the game with the selected difficulty.
 
         :param difficulty: str - The selected difficulty level.
-        :param reset_game: Callable - Callback function to reset the game.
+        :param reset_game: Callable[[str], None] - Callback function to reset the game.
         """
         reset_game(difficulty)
 
-    def update_menu(self, flags_left, timer) -> None:
+    def update_menu(self, flags_left: int, timer: int) -> None:
         """
         Update the menu display with the current number of flags left and the timer value.
 
@@ -69,14 +70,14 @@ class GameView(ctk.CTk):
         self.flags_label.configure(text=f"Flags Left: {flags_left}")
         self.timer_label.configure(text=f"Timer: {timer}")
 
-    def create_board(self, rows, cols, click_handler, right_click_handler) -> None:
+    def create_board(self, rows: int, cols: int, click_handler: Callable[[int, int], None], right_click_handler: Callable[[int, int], None]) -> None:
         """
         Create the game board with buttons for each cell.
 
         :param rows: int - Number of rows in the grid.
         :param cols: int - Number of columns in the grid.
-        :param click_handler: Callable - Function to handle left-click events.
-        :param right_click_handler: Callable - Function to handle right-click events.
+        :param click_handler: Callable[[int, int], None] - Function to handle left-click events.
+        :param right_click_handler: Callable[[int, int], None] - Function to handle right-click events.
         """
         for row in range(rows):
             for col in range(cols):
@@ -88,7 +89,7 @@ class GameView(ctk.CTk):
                 button.grid(row=row, column=col, padx=2, pady=2)
                 self.grid_buttons[(row, col)] = button
 
-    def update_cell(self, row, col, text, is_revealed=False) -> None:
+    def update_cell(self, row: int, col: int, text: str, is_revealed: bool = False) -> None:
         """
         Update the appearance of a cell on the game board.
 

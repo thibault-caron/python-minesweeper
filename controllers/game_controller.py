@@ -1,8 +1,10 @@
 from models.game_grid import GameGrid
 from models.menu import Menu
+from views.game_view import GameView
+from typing import Optional
 
 class GameController:
-    def __init__(self, view):
+    def __init__(self, view: GameView) -> None:
         """
         Initialize the game controller.
 
@@ -12,7 +14,7 @@ class GameController:
         self.board = None
         self.menu = None
 
-    def start_game(self, difficulty="easy") -> None:
+    def start_game(self, difficulty: str = "easy") -> None:
         """
         Start a new game with the specified difficulty.
 
@@ -29,12 +31,11 @@ class GameController:
         self.view.create_menu(self.menu, self.reset_game)
         self.view.create_board(rows, cols, self.handle_cell_click, self.handle_cell_right_click)
 
-    def reset_game(self, difficulty=None) -> None:
+    def reset_game(self, difficulty: Optional[str] = None) -> None:
         """
         Reset the game to its initial state.
 
-        :param difficulty: Difficulty level to reset to. Defaults to the current difficulty.
-        :type difficulty: str, optional
+        :param difficulty: Optional[str] - Difficulty level to reset to. Defaults to the current difficulty.
         """
         if difficulty is None:
             difficulty = self.menu.difficulty  # Use the current difficulty if not provided
@@ -42,7 +43,7 @@ class GameController:
         self.view.clear_view()  # Clear the view before resetting
         self.start_game(difficulty)
 
-    def handle_cell_click(self, row, col) -> None:
+    def handle_cell_click(self, row: int, col: int) -> None:
         """
         Handle a left-click event on a cell.
 
@@ -73,7 +74,7 @@ class GameController:
                     return
         self.view.show_game_won() 
 
-    def handle_cell_right_click(self, row, col) -> None:
+    def handle_cell_right_click(self, row: int, col: int) -> None:
         """
         Handle a right-click event on a cell.
 

@@ -4,10 +4,12 @@ import random
 
 class Cell:
     all = []
-    cell_counter_object = None        
+    cell_counter_object = None 
+    cell_left = CELLS_COUNT       
     def __init__(self, x, y, is_mine = False):
         
         self.is_mine = is_mine
+        self.is_revealed = False
         self.cell_button_object = None
         
         self.x = x
@@ -35,10 +37,10 @@ class Cell:
     def counter_label(location):
         counter = tk.Label(
             location,
-            text=f"Cells Left: {CELLS_COUNT}",
+            text=f"Left: {Cell.cell_left}",
             bg="black",
             fg="lime",
-            font=("Retro gaming", 20)
+            font=("Retro gaming", 24),
             )
         Cell.cell_counter_object = counter
         
@@ -81,22 +83,28 @@ class Cell:
         return count
             
     def show_number(self):
-        self.cell_button_object.destroy()
-        self.cell_button_object = tk.Label(
-            self.cell_button_object.master,
-            text=self.surronded_cells_mine_count,
-            bg="grey",
-            width=12,
-            height=4,
-            highlightthickness=0,
-            bd=0,
-            padx=0,
-            pady=0,
-            )
-        self.cell_button_object.grid(
-            column=self.x, row=self.y,
-            sticky="nsew"
-            )
+        if not self.is_revealed:
+            Cell.cell_left -= 1
+            
+            self.cell_button_object.destroy()
+            self.cell_button_object = tk.Label(
+                self.cell_button_object.master,
+                text=self.surronded_cells_mine_count,
+                bg="grey",
+                width=14,
+                height=5,
+                )
+            self.cell_button_object.grid(
+                column=self.x, row=self.y,
+                sticky="nsew"
+                )
+            if Cell.cell_counter_object:
+                Cell.cell_counter_object.config(
+                    text=f"Left: {Cell.cell_left}"
+                    )
+            
+        # Mark the cell as revealed
+        self.is_revealed = True
             
     def show_mine(self):
         # A logic to show the mine and end the game showing a message box
@@ -105,12 +113,8 @@ class Cell:
             self.cell_button_object.master,
             text="X",
             bg="red",
-            width=12,
-            height=4,
-            highlightthickness=0,
-            bd=0,
-            padx=0,
-            pady=0,
+            width=14,
+            height=5,
             )
         self.cell_button_object.grid(
             column=self.x, row=self.y,

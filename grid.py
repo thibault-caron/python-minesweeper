@@ -8,10 +8,9 @@ top_frame(root)
 center_frame(root)
 
 class Grid:
-    def __init__(self, center_frame, x, y):
-        self.x = x
-        self.y = y
-        self.cells = []
+    all = []
+    def __init__(self, center_frame):
+        Grid.all.append(self)
         
         
     def create_grid(self):

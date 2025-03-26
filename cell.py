@@ -10,6 +10,7 @@ class Cell:
     
     flag_image = None
     question_image = None
+    bomb_image = None
          
     def __init__(self, x, y, is_mine = False):
         
@@ -38,7 +39,12 @@ class Cell:
         if Cell.question_image is None:
             img = Image.open("assets/icons/question.png")
             img = img.resize((30, 30), Image.Resampling.LANCZOS)
-            Cell.question_image = ImageTk.PhotoImage(img)  
+            Cell.question_image = ImageTk.PhotoImage(img)
+            
+        if Cell.bomb_image is None:
+            img = Image.open("assets/icons/bomb.png")
+            img = img.resize((30, 30), Image.Resampling.LANCZOS)
+            Cell.bomb_image = ImageTk.PhotoImage(img)
         
     def create_button(self, location):
         button = tk.Button(
@@ -132,7 +138,8 @@ class Cell:
         self.cell_button_object.destroy()
         self.cell_button_object = tk.Label(
             self.cell_button_object.master,
-            text="X",
+            image=Cell.bomb_image,
+            compound="center",
             bg="red",
             width=14,
             height=5,

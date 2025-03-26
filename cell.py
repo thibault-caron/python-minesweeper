@@ -11,6 +11,7 @@ class Cell:
     flag_image = None
     question_image = None
     bomb_image = None
+    game_message = None
          
     def __init__(self, x, y, is_mine = False):
         
@@ -18,7 +19,6 @@ class Cell:
         self.is_revealed = False
         self.is_flagged = False
         self.is_questioned = False
-        
         
         self.cell_button_object = None
         
@@ -80,20 +80,27 @@ class Cell:
                     cell.cell_button_object.configure(state="disabled")
                     cell.cell_button_object.unbind("<Button-1>")
                     cell.cell_button_object.unbind("<Button-3>")
-            tk.Message(
-                text="Game Over! You hit a mine!",
-                font=("Retro gaming", 24),
-                bg="black",
-                fg="red",
-                relief="raised",
-                borderwidth=10,
-                width=300,
-                ).pack(pady=height_prctg(35))
+            Cell.show_game_message("Game Over! You hit a mine!")
         else:
             if self.surronded_cells_mine_count == 0:
                 for cell in self.get_surronded_cells:
                     cell.show_number()
             self.show_number()
+            
+    @staticmethod
+    def show_game_message(message):
+        """Displays a win or lose message on the screen."""
+        if Cell.game_message:
+            Cell.game_message.destroy()  # Remove previous message if any
+        
+        Cell.game_message = tk.Label(
+            Cell.center_frame,
+            text=message,
+            font=("Retro Gaming", 24),
+            bg="black",
+            fg="red" if message == "Game Over! You hit a mine!" else "lime"
+        )
+        Cell.game_message.place(relx=0.5, rely=0.5, anchor="center")
             
     def get_cell_by_axis(self, x, y):
         for cell in Cell.all:
@@ -144,7 +151,9 @@ class Cell:
                 Cell.cell_counter_object.config(
                     text=f"Left: {Cell.cell_left}"
                     )
-            
+        # Check win condition
+        self.win_condition()
+        
         # Mark the cell as revealed
         self.is_revealed = True
             
@@ -186,15 +195,9 @@ class Cell:
                 if isinstance(cell.cell_button_object, tk.Button):
                     cell.cell_button_object.unbind("<Button-1>")
                     cell.cell_button_object.unbind("<Button-3>")
-            tk.Message(
-                text="Congratulations! You won the game!",
-                font=("Retro gaming", 24),
-                bg="black",
-                fg="lime",
-                relief="raised",
-                borderwidth=10,
-                width=300,
-                ).pack(pady=height_prctg(35))
+                    cell.cell_button_object.configure(state="disabled")
+                    
+            Cell.show_game_message("Congratulations! You won!")
     
     @staticmethod
     def new_game():
@@ -203,6 +206,11 @@ class Cell:
         for cell in Cell.all:
             if cell.cell_button_object:
                 cell.cell_button_object.destroy()
+                
+        # destroy the message
+        if Cell.game_message:
+            Cell.game_message.destroy()
+            Cell.game_message = None
         
         # Clear the cell list
         Cell.all.clear()

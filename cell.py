@@ -1,15 +1,24 @@
 import tkinter as tk
 from utils import *
 import random
+from PIL import Image, ImageTk
 
 class Cell:
     all = []
     cell_counter_object = None 
-    cell_left = CELLS_COUNT       
+    cell_left = CELLS_COUNT
+    
+    flag_image = None
+    question_image = None
+         
     def __init__(self, x, y, is_mine = False):
         
         self.is_mine = is_mine
         self.is_revealed = False
+        self.is_flagged = False
+        self.is_questioned = False
+        
+        
         self.cell_button_object = None
         
         self.x = x
@@ -17,7 +26,19 @@ class Cell:
         
         # add the cell to the list of all cells
         Cell.all.append(self)
+    
+    @staticmethod
+    def initialize_images():
+        """Resizes and initializes images once Tkinter root exists."""
+        if Cell.flag_image is None:
+            img = Image.open("assets/icons/flag.png")  # Load image
+            img = img.resize((30, 30), Image.Resampling.LANCZOS)  # Resize to 30x30 pixels
+            Cell.flag_image = ImageTk.PhotoImage(img)  # Convert to Tkinter-compatible format
         
+        if Cell.question_image is None:
+            img = Image.open("assets/icons/question.png")
+            img = img.resize((30, 30), Image.Resampling.LANCZOS)
+            Cell.question_image = ImageTk.PhotoImage(img)  
         
     def create_button(self, location):
         button = tk.Button(
@@ -122,8 +143,21 @@ class Cell:
             )
         
     def right_click(self, event):
-        print("right click")
-    
+            if not self.is_flagged and not self.is_questioned:
+                self.cell_button_object.config(image=Cell.flag_image, compound="center")
+                self.is_flagged = True
+                
+            elif self.is_flagged:
+                self.cell_button_object.config(image=Cell.question_image, compound="center")
+                self.is_flagged = False
+                self.is_questioned = True
+                
+            elif self.is_questioned:
+                empty_img = tk.PhotoImage()
+                self.cell_button_object.config(image=empty_img)
+                self.cell_button_object.image = empty_img
+                self.is_questioned = False     
+            
     @staticmethod    
     def randomize_mine():
         picked_cells = random.sample(Cell.all, MINE_COUNT)

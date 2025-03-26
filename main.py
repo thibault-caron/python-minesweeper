@@ -2,6 +2,7 @@ from utils import *
 from cell import Cell
 
 root = create_window()
+Cell.initialize_images()
 
 def main():
     # game = Game()
@@ -41,6 +42,7 @@ for x in range(GRID_SIZE):
         cell.create_button(center_frame)
         cell.cell_button_object.grid(
             column=x, row=y,
+            sticky="nsew"
         )
 
 # show counter label in top frame

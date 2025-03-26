@@ -1,5 +1,6 @@
 from models.game_grid import GameGrid
 from views.game_view import GameView
+from constants import Difficulty  # Import Difficulty from constants
 from typing import Optional
 
 class GameController:
@@ -12,36 +13,34 @@ class GameController:
         self.view = view
         self.board = None
 
-    def start_game(self, difficulty: str = "easy") -> None:
+    def initialize_game(self, difficulty: Optional[Difficulty] = None) -> None:
         """
-        Start a new game with the specified difficulty.
+        Initialize or reset the game with the specified difficulty.
 
-        :param difficulty: str - Difficulty level ("easy", "medium", or "hard").
+        :param difficulty: Optional[Difficulty] - Difficulty level to initialize or reset to.
+                           Defaults to the current difficulty.
         """
+        if difficulty is None:
+            difficulty = self.view.difficulty
+        elif isinstance(difficulty, str):  # Convert string to Difficulty enum if necessary
+            difficulty = Difficulty(difficulty)
+
+        # Reset the timer and clear the view
+        self.view.reset_timer()
+        self.view.clear_view()
+
+        # Set up the game board
         difficulty_settings = {
-            "easy": (9, 9, 10),
-            "medium": (16, 16, 40),
-            "hard": (16, 30, 99)
+            Difficulty.EASY: (9, 9, 10),
+            Difficulty.MEDIUM: (16, 16, 40),
+            Difficulty.HARD: (16, 30, 99)
         }
         rows, cols, mines = difficulty_settings[difficulty]
         self.board = GameGrid(rows, cols, mines)
         self.view.flags_left = mines
         self.view.difficulty = difficulty
-        self.view.create_menu(self.reset_game)
+        self.view.create_menu(self.initialize_game)
         self.view.create_board(rows, cols, self.handle_cell_click, self.handle_cell_right_click)
-
-    def reset_game(self, difficulty: Optional[str] = None) -> None:
-        """
-        Reset the game to its initial state.
-
-        :param difficulty: Optional[str] - Difficulty level to reset to. Defaults to the current difficulty.
-        """
-        if difficulty is None:
-            difficulty = self.view.difficulty
-        self.view.reset_timer()
-        self.board = None  # Free memory by releasing the old board
-        self.view.clear_view()
-        self.start_game(difficulty)
 
     def handle_cell_click(self, row: int, col: int) -> None:
         """

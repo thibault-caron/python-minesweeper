@@ -63,11 +63,6 @@ new_game_btn.grid(
     padx=width_prctg(4)
     )
 
-
-# randomize the mines        
-Cell.randomize_mine()
-
-
 if __name__ == "__main__":
     main()
     # run the window

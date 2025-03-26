@@ -12,6 +12,7 @@ class Cell:
     question_image = None
     bomb_image = None
     game_message = None
+    first_click = True
          
     def __init__(self, x, y, is_mine = False):
         
@@ -72,6 +73,11 @@ class Cell:
         Cell.cell_counter_object = counter
         
     def left_click(self, event):
+        # wait for the first left click to randomize the mines
+        if Cell.first_click:
+            Cell.first_click = False
+            Cell.randomize_mine(self)
+        
         if self.is_mine:
             for cell in Cell.all:
                 if cell.is_mine:
@@ -215,6 +221,9 @@ class Cell:
         # Clear the cell list
         Cell.all.clear()
         
+        # Reset first click to ensure mines are randomized on first move
+        Cell.first_click = True
+        
         # Reset the counter
         Cell.cell_left = CELLS_COUNT
         if Cell.cell_counter_object:
@@ -245,8 +254,16 @@ class Cell:
         return start_button
     
     @staticmethod            
-    def randomize_mine():
-        picked_cells = random.sample(Cell.all, MINE_COUNT)
+    def randomize_mine(first_clicked_cell):
+        # randomize mine after first left click
+        # Get all possible cells except the first clicked cell
+        available_cells = [cell for cell in Cell.all if cell != first_clicked_cell]
+        
+        picked_cells = random.sample(available_cells, MINE_COUNT)
+        
+        if len(available_cells) < MINE_COUNT:
+            raise ValueError("Not enough spaces to place mines!")
+        
         for picked_cell in picked_cells:
             picked_cell.is_mine = True
         print(picked_cells)

@@ -4,12 +4,6 @@ from cell import Cell
 root = create_window()
 Cell.initialize_images()
 
-def main():
-    # game = Game()
-    # game.mainloop()
-    pass
-
-
 # initialize the top frame
 top_frame = tk.Frame(
     root,
@@ -64,6 +58,4 @@ new_game_btn.grid(
     )
 
 if __name__ == "__main__":
-    main()
-    # run the window
     root.mainloop()

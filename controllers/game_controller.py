@@ -1,6 +1,6 @@
 from models.game_grid import GameGrid
 from views.game_view import GameView
-from constants import Difficulty  # Import Difficulty from constants
+from constants import Difficulty, difficulty_settings
 from typing import Optional
 
 class GameController:
@@ -23,17 +23,10 @@ class GameController:
         if difficulty is None:
             difficulty = self.view.difficulty
 
-        # Reset the timer and clear the view
         self.view.reset_timer()
         self.view.clear_view()
 
-        # Set up the game board
-        difficulty_settings = {
-            Difficulty.EASY: (9, 9, 10),
-            Difficulty.MEDIUM: (16, 16, 40),
-            Difficulty.HARD: (16, 30, 99)
-        }
-        rows, cols, mines = difficulty_settings[difficulty]
+        rows, cols, mines = difficulty_settings[difficulty]  # imported from constants.py
         self.board = GameGrid(rows, cols, mines)
         self.view.flags_left = mines
         self.view.difficulty = difficulty
@@ -56,17 +49,30 @@ class GameController:
         if cell.is_flagged or cell.is_unsure: 
             return
         if cell.is_mine:
-            # Reveal all bomb cells
-            for r in range(self.board.rows):
-                for c in range(self.board.cols):
-                    if self.board.cell_list[r][c].is_mine:
-                        self.view.update_cell(r, c, "💣", is_revealed=True)
-                        self.view.grid_buttons[r][c].configure(fg_color="#8B0000")
+            mine_positions = [
+                (r, c) for r in range(self.board.rows) for c in range(self.board.cols)
+                if self.board.cell_list[r][c].is_mine and (r, c) != (row, col)
+            ]  # list excluding the clicked mine cell
+            self._reveal_bombs_with_delay([(row, col)] + mine_positions)  # "+" concatenates both into one tuple list
             self.view.timer_running = False
             self.view.show_game_over()
         else:
             self.reveal_cells(row, col)
             self.check_win_condition()
+
+    def _reveal_bombs_with_delay(self, bomb_positions: list[tuple[int, int]], delay: int = 350) -> None:
+        """
+        Reveal bomb cells one by one with a delay.
+
+        :param bomb_positions: list[tuple[int, int]] - List of bomb cell positions.
+        :param delay: int - Delay in milliseconds between revealing each bomb.
+        """
+        if not bomb_positions:
+            return
+        row, col = bomb_positions.pop(0)
+        self.view.update_cell(row, col, "💣", is_revealed=True)
+        self.view.grid_buttons[row][col].configure(fg_color="#8B0000")  # Dark red background
+        self.view.after(delay, lambda: self._reveal_bombs_with_delay(bomb_positions, delay))
 
     def check_win_condition(self) -> None:
         """

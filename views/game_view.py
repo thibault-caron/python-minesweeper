@@ -65,9 +65,9 @@ class GameView(ctk.CTk):
         :param reset_game: Callable[[Difficulty], None] - Callback function to reset the game.
         """
         self.difficulty_menu.configure(
-            command=lambda difficulty: reset_game(Difficulty[difficulty])
+            command=lambda difficulty: reset_game(Difficulty[difficulty])  # Convert string to Difficulty enum
         )
-        self.reset_button.configure(command=lambda: reset_game())  # No argument needed
+        self.reset_button.configure(command=lambda: reset_game())
         self.flags_label.configure(text=f"{self.flags_left}")
 
     def create_board(self, rows: int, cols: int, click_handler: Callable[[int, int], None], right_click_handler: Callable[[int, int], None]) -> None:

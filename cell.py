@@ -73,7 +73,20 @@ class Cell:
         
     def left_click(self, event):
         if self.is_mine:
-            self.show_mine()
+            for cell in Cell.all:
+                if cell.is_mine:
+                    cell.show_mine()
+                if isinstance(cell.cell_button_object, tk.Button):
+                    cell.cell_button_object.unbind("<Button-1>")
+                    cell.cell_button_object.unbind("<Button-3>")
+            tk.Message(
+                text="Game Over! You hit a mine!",
+                font=("Retro gaming", 24),
+                bg="black",
+                fg="red",
+                relief="raised",
+                borderwidth=10,
+                ).pack()
         else:
             if self.surronded_cells_mine_count == 0:
                 for cell in self.get_surronded_cells:
@@ -134,7 +147,7 @@ class Cell:
         self.is_revealed = True
             
     def show_mine(self):
-        # A logic to show the mine and end the game showing a message box
+        # A logic to show all mines and end the game with a message (refer to left_click method in is_mine condition)
         self.cell_button_object.destroy()
         self.cell_button_object = tk.Label(
             self.cell_button_object.master,
@@ -164,8 +177,8 @@ class Cell:
                 self.cell_button_object.config(image=empty_img)
                 self.cell_button_object.image = empty_img
                 self.is_questioned = False     
-            
-    @staticmethod    
+    
+    @staticmethod            
     def randomize_mine():
         picked_cells = random.sample(Cell.all, MINE_COUNT)
         for picked_cell in picked_cells:

@@ -1,6 +1,6 @@
 from enum import Enum
 
 class Difficulty(Enum):
-    EASY = "easy"
-    MEDIUM = "medium"
-    HARD = "hard"
+    EASY = 1
+    MEDIUM = 2
+    HARD = 3

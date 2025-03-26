@@ -43,11 +43,11 @@ class GameView(ctk.CTk):
 
         self.difficulty_menu = ctk.CTkOptionMenu(
             self.menu_frame,
-            values=["easy", "medium", "hard"],
+            values=[d.name for d in Difficulty],
             command=None,  # Set later in create_menu
             width=100
         )
-        self.difficulty_menu.set(self.difficulty.value)
+        self.difficulty_menu.set(self.difficulty.name)
         self.difficulty_menu.grid(row=0, column=3, padx=10, sticky="ew")
 
     def clear_view(self) -> None:
@@ -64,20 +64,12 @@ class GameView(ctk.CTk):
 
         :param reset_game: Callable[[Difficulty], None] - Callback function to reset the game.
         """
-        self.difficulty_menu.configure(command=lambda difficulty: self._on_difficulty_change(difficulty, reset_game))
-        self.reset_button.configure(command=lambda: reset_game(self.difficulty))  # Updated reference
+        self.difficulty_menu.configure(
+            command=lambda difficulty: reset_game(Difficulty[difficulty])
+        )
+        self.reset_button.configure(command=lambda: reset_game())  # No argument needed
         self.flags_label.configure(text=f"{self.flags_left}")
 
-    def _on_difficulty_change(self, difficulty: str, reset_game: Callable[[Difficulty], None]) -> None:
-        """
-        Handle difficulty change events and reset the game with the selected difficulty.
-
-        :param difficulty: str - The selected difficulty level.
-        :param reset_game: Callable[[Difficulty], None] - Callback function to reset the game.
-        """
-        self.difficulty = Difficulty(difficulty)  # Convert string to Difficulty enum
-        reset_game(self.difficulty)
-        
     def create_board(self, rows: int, cols: int, click_handler: Callable[[int, int], None], right_click_handler: Callable[[int, int], None]) -> None:
         """
         Create the game board with buttons for each cell.

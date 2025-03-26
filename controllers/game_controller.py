@@ -22,8 +22,6 @@ class GameController:
         """
         if difficulty is None:
             difficulty = self.view.difficulty
-        elif isinstance(difficulty, str):  # Convert string to Difficulty enum if necessary
-            difficulty = Difficulty(difficulty)
 
         # Reset the timer and clear the view
         self.view.reset_timer()
@@ -58,7 +56,12 @@ class GameController:
         if cell.is_flagged or cell.is_unsure: 
             return
         if cell.is_mine:
-            self.view.update_cell(row, col, "💣", is_revealed=True)
+            # Reveal all bomb cells
+            for r in range(self.board.rows):
+                for c in range(self.board.cols):
+                    if self.board.cell_list[r][c].is_mine:
+                        self.view.update_cell(r, c, "💣", is_revealed=True)
+                        self.view.grid_buttons[r][c].configure(fg_color="#8B0000")
             self.view.timer_running = False
             self.view.show_game_over()
         else:

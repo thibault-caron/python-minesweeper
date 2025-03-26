@@ -194,7 +194,47 @@ class Cell:
                 relief="raised",
                 borderwidth=10,
                 width=300,
-                ).pack(pady=height_prctg(35))   
+                ).pack(pady=height_prctg(35))
+    
+    @staticmethod
+    def new_game():
+        """Resets the game by clearing the grid and generating new mines."""
+        # Destroy all existing buttons
+        for cell in Cell.all:
+            if cell.cell_button_object:
+                cell.cell_button_object.destroy()
+        
+        # Clear the cell list
+        Cell.all.clear()
+        
+        # Reset the counter
+        Cell.cell_left = CELLS_COUNT
+        if Cell.cell_counter_object:
+            Cell.cell_counter_object.config(text=f"Left: {Cell.cell_left}")
+        
+        # Recreate the grid
+        for x in range(GRID_SIZE):
+            for y in range(GRID_SIZE):
+                cell = Cell(x, y)
+                cell.create_button(Cell.center_frame)  # Create new buttons inside center_frame
+                cell.cell_button_object.grid(column=x, row=y, sticky="nsew")
+
+        # Randomize new mines
+        Cell.randomize_mine()
+
+    @staticmethod    
+    def new_game_button(location):    
+        start_button = tk.Button(
+            location,
+            text="New Game",
+            bg="grey",
+            fg="lime",
+            font=("Retro gaming", 24),
+            relief="raised",
+            borderwidth=10,
+            command=Cell.new_game
+            )
+        return start_button
     
     @staticmethod            
     def randomize_mine():

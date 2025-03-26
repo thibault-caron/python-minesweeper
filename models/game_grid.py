@@ -1,6 +1,6 @@
 import random
 from models.cell import Cell
-from typing import List
+from typing import List, Set, Tuple
 
 class GameGrid:
     """
@@ -25,9 +25,15 @@ class GameGrid:
         :param first_click_col: int - Column index of the first clicked cell.
         """
         self.first_click = (first_click_row, first_click_col)
-        all_positions = [(r, c) for r in range(self.rows) for c in range(self.cols)]
-        all_positions.remove(self.first_click)  # Exclude the first clicked cell
-        mine_positions = random.sample(all_positions, self.mines)
+        excluded_positions: Set[Tuple[int, int]] = {(first_click_row, first_click_col)}
+        mine_positions = set()
+
+        while len(mine_positions) < self.mines:
+            row = random.randint(0, self.rows - 1)
+            col = random.randint(0, self.cols - 1)
+            if (row, col) not in excluded_positions and (row, col) not in mine_positions:
+                mine_positions.add((row, col))
+
         for row, col in mine_positions:
             self.cell_list[row][col].is_mine = True
 

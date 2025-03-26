@@ -1,5 +1,4 @@
 from models.game_grid import GameGrid
-from models.menu import Menu
 from views.game_view import GameView
 from typing import Optional
 
@@ -12,7 +11,6 @@ class GameController:
         """
         self.view = view
         self.board = None
-        self.menu = None
 
     def start_game(self, difficulty: str = "easy") -> None:
         """
@@ -27,8 +25,9 @@ class GameController:
         }
         rows, cols, mines = difficulty_settings[difficulty]
         self.board = GameGrid(rows, cols, mines)
-        self.menu = Menu(mines, difficulty)
-        self.view.create_menu(self.menu, self.reset_game)
+        self.view.flags_left = mines
+        self.view.difficulty = difficulty
+        self.view.create_menu(self.reset_game)
         self.view.create_board(rows, cols, self.handle_cell_click, self.handle_cell_right_click)
 
     def reset_game(self, difficulty: Optional[str] = None) -> None:
@@ -38,9 +37,10 @@ class GameController:
         :param difficulty: Optional[str] - Difficulty level to reset to. Defaults to the current difficulty.
         """
         if difficulty is None:
-            difficulty = self.menu.difficulty  # Use the current difficulty if not provided
-        self.menu.stop_timer()
-        self.view.clear_view()  # Clear the view before resetting
+            difficulty = self.view.difficulty
+        self.view.reset_timer()
+        self.board = None  # Free memory by releasing the old board
+        self.view.clear_view()
         self.start_game(difficulty)
 
     def handle_cell_click(self, row: int, col: int) -> None:
@@ -50,15 +50,17 @@ class GameController:
         :param row: int - Row index of the clicked cell.
         :param col: int - Column index of the clicked cell.
         """
-        if self.menu.timer == 0:
-            self.menu.start_timer() 
+        if not self.view.timer_running:
+            self.view.timer_running = True
+            self.view.increment_timer()  # Start the timer
             self.board._place_mines(row, col)
             self.board._calculate_adjacent_mines()
         cell = self.board.cell_list[row][col]
         if cell.is_flagged or cell.is_unsure: 
             return
         if cell.is_mine:
-            self.view.update_cell(row, col, "B", is_revealed=True)
+            self.view.update_cell(row, col, "💣", is_revealed=True)
+            self.view.timer_running = False
             self.view.show_game_over()
         else:
             self.reveal_cells(row, col)
@@ -72,6 +74,7 @@ class GameController:
             for cell in row:
                 if not cell.is_mine and not cell.is_revealed:
                     return
+        self.view.timer_running = False
         self.view.show_game_won() 
 
     def handle_cell_right_click(self, row: int, col: int) -> None:
@@ -87,16 +90,16 @@ class GameController:
         if cell.is_flagged:
             cell.is_flagged = False
             cell.is_unsure = True
-            self.menu.flags_left += 1
+            self.view.flags_left += 1
             self.view.update_cell(row, col, "?")
         elif cell.is_unsure:
             cell.is_unsure = False
             self.view.update_cell(row, col, "")
         else:
             cell.is_flagged = True
-            self.menu.flags_left -= 1
-            self.view.update_cell(row, col, "F")
-        self.view.update_menu(self.menu.flags_left, self.menu.timer)
+            self.view.flags_left -= 1
+            self.view.update_cell(row, col, "🚩")
+        self.view.flags_label.configure(text=f"{self.view.flags_left:02d}")
 
     def reveal_cells(self, row: int, col: int) -> None:
         """

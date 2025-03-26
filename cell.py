@@ -77,6 +77,7 @@ class Cell:
                 if cell.is_mine:
                     cell.show_mine()
                 if isinstance(cell.cell_button_object, tk.Button):
+                    cell.cell_button_object.configure(state="disabled")
                     cell.cell_button_object.unbind("<Button-1>")
                     cell.cell_button_object.unbind("<Button-3>")
             tk.Message(
@@ -86,7 +87,8 @@ class Cell:
                 fg="red",
                 relief="raised",
                 borderwidth=10,
-                ).pack()
+                width=300,
+                ).pack(pady=height_prctg(35))
         else:
             if self.surronded_cells_mine_count == 0:
                 for cell in self.get_surronded_cells:
@@ -176,7 +178,23 @@ class Cell:
                 empty_img = tk.PhotoImage()
                 self.cell_button_object.config(image=empty_img)
                 self.cell_button_object.image = empty_img
-                self.is_questioned = False     
+                self.is_questioned = False
+                
+    def win_condition(self):
+        if Cell.cell_left == MINE_COUNT:
+            for cell in Cell.all:
+                if isinstance(cell.cell_button_object, tk.Button):
+                    cell.cell_button_object.unbind("<Button-1>")
+                    cell.cell_button_object.unbind("<Button-3>")
+            tk.Message(
+                text="Congratulations! You won the game!",
+                font=("Retro gaming", 24),
+                bg="black",
+                fg="lime",
+                relief="raised",
+                borderwidth=10,
+                width=300,
+                ).pack(pady=height_prctg(35))   
     
     @staticmethod            
     def randomize_mine():

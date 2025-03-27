@@ -13,7 +13,7 @@ top_frame = tk.Frame(
     )
 top_frame.place(
     width = width_prctg(44.5),
-    height = height_prctg(20),
+    height = height_prctg(15),
     x = width_prctg(5),
     y = height_prctg(5)
     )

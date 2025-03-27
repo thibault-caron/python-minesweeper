@@ -138,6 +138,7 @@ class Cell:
         return count
             
     def show_number(self):
+        # create a counter for the number of cells left
         if not self.is_revealed:
             Cell.cell_left -= 1
             
@@ -243,7 +244,7 @@ class Cell:
     def new_game_button(location):    
         start_button = tk.Button(
             location,
-            text="New Game",
+            text="Restart",
             bg="grey",
             fg="lime",
             font=("Retro gaming", 24),

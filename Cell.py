@@ -3,6 +3,7 @@ import configure as cfg
 import random # attention : importer que ce ce qui est nécessaire pour ne pas surcharger le programme
 from enum import Enum
 import emoji
+from Game import Game
 
 class CellState(Enum):
     """Enum for cell state"""
@@ -23,20 +24,21 @@ class CellState(Enum):
 class Cell:
     # all = [] a quoi ca sert ? c'est quoi?
     def __init__(self, location):
-        self.location = location # location =(raw, col)
+        self.location = location # (row, col)
         self.cell_button = None
-        self.cell_label = None
         self.is_mine = False
         self.state = CellState.UNKNOW
 
 
-    def create_button(self):
+    def create_button(self, parent):
         """create a button"""
-        btn = tk.Button(self.location, width=10, height=10, bg=cfg.BUTTON_COLOR)
-        btn.bind("<Button-1>", self.left_click_action)
-        btn.bind("<Button-3>", self.right_click_action)
-        # self.cell_button.grid() -- placer le bouton dans la grille
-        # return btn
+        self.cell_button = tk.Button(
+            parent, 
+            width=5, 
+            height=2, 
+            bg=cfg.BUTTON_COLOR)
+        self.cell_button.bind("<Button-1>", self.left_click_action)
+        self.cell_button.bind("<Button-3>", self.right_click_action)
 
     def surrounded_mines(self):
         # compte les mines alentour, a voir si cette méthode reste la 
@@ -48,17 +50,17 @@ class Cell:
         self.state = CellState.UNKNOW
     
     def show_mine(self, event):
-        """turn the button into label and show the mine"""
-        self.cell_button.destroy()
-        self.cell_label = tk.Label(
-            self.location, 
+        """change the appearance of the button to show a mine and disable interactions"""
+        self.cell_button.configure(
             text = f"{emoji.emojize(":bomb:")}",
-            font=("Helvitica", 10),
-            bg = "red"
-            # width and height
+            font = ("Helvetica", 10),
+            bg = "red",
+            state = "disabled",
         )
 
-        self.cell_label.grid(row=self.cell_button.grid_info()["row"], column=self.cell_button.grid_info()["column"])
+        self.cell_button.unbind("<Button-1>")
+        self.cell_button.unbind("<Button-3>") 
+
         
     def show_number(self, event):
         """turn the button into label and show the number of adjacent bombs if any"""

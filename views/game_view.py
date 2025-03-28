@@ -93,14 +93,23 @@ class GameView(ctk.CTk):
         for row in range(rows):
             for col in range(cols):
                 button = ctk.CTkButton(
-                    self.grid_frame, text="", width=32, height=32,
+                    self.grid_frame,
+                    text="",
+                    width=32,
+                    height=32,
+                    fg_color="#c0c0c0",
+                    hover_color="#d9d9d9",
+                    text_color="#808080",
+                    corner_radius=0,
+                    border_width=3,
+                    border_color="#a6a6a6",
                     command=lambda r=row, c=col: click_handler(r, c)
                 )
                 button.bind("<Button-3>", lambda event, r=row, c=col: right_click_handler(r, c))
-                button.grid(row=row, column=col, padx=2, pady=2)
+                button.grid(row=row, column=col, padx=1, pady=1)
                 self.grid_buttons[row][col] = button  # Store button in 2D list
 
-    def update_cell(self, row: int, col: int, text: str, is_revealed: bool = False, right_click_handler: Callable[[int, int], None] = None) -> None:
+    def update_cell(self, row: int, col: int, text: str, is_revealed: bool = False, is_mine = False, right_click_handler: Callable[[int, int], None] = None) -> None:
         """
         Update the appearance of a cell on the game board.
 
@@ -111,21 +120,52 @@ class GameView(ctk.CTk):
         :param right_click_handler: Callable[[int, int], None] - Function to handle right-click events.
         """
         button = self.grid_buttons[row][col]
+
         if is_revealed:
+            # Ensure text is treated as a string
+            text = str(text)
+
+            # Determine text color based on the text value
+            if text.isdigit() and 1 <= int(text) <= 8:
+                red_intensity = int(255 - (int(text) - 1) * (255 / 7))  # Gradation from light red to dark red
+                text_color = f"#{red_intensity:02x}0000"  # Convert to hex color
+            else:
+                text_color="#8d8d8d"
+
             button.configure(
-                text=text,
+                text="",
                 state="disabled",
                 fg_color=("gray80", "gray20"),  # (Dark mode, Light mode)
-                font=("Arial", 14, "bold")
+                border_width=0
             )
+
+            # Add a label inside the button to control the text color
+            if is_mine == False:
+                label = ctk.CTkLabel(
+                    button,
+                    text=text,
+                    text_color=text_color,
+                    fg_color=("gray80", "gray20"),
+                    font=("Arial", 14, "bold")
+                )
+            else: 
+                label = ctk.CTkLabel(
+                    button,
+                    text=text,
+                    text_color=text_color,
+                    fg_color=("#8B0000"),
+                    font=("Arial", 14, "bold")
+                )
+            label.place(relx=0.5, rely=0.5, anchor="center")
         else:
             button.configure(
                 text=text,
                 font=("Arial", 14, "bold")
             )
-            # Re-bind the method so that the new button text is also bound by it
-            if right_click_handler:
-                button.bind("<Button-3>", lambda event: right_click_handler(row, col))
+        # Re-bind the method so that the new button text is also bound by it
+        if right_click_handler:
+            button.unbind("<Button-3>")
+            button.bind("<Button-3>", lambda event: right_click_handler(row, col))
 
     def end_game_message(self, message: str) -> None:
         """
@@ -142,7 +182,7 @@ class GameView(ctk.CTk):
         """
         if self.timer_running:
             self.timer_value += 1
-            self.timer_label.configure(text=f"Timer: {self.timer_value:02d}")
+            self.timer_label.configure(text=f"Timer: {self.timer_value:03d}")
             self.after(1000, self.increment_timer)
 
     def reset_timer(self) -> None:
@@ -151,4 +191,4 @@ class GameView(ctk.CTk):
         """
         self.timer_running = False
         self.timer_value = 0
-        self.timer_label.configure(text=f"Timer: {self.timer_value:02d}")
+        self.timer_label.configure(text=f"Timer: {self.timer_value:03d}")

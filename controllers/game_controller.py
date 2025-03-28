@@ -61,25 +61,29 @@ class GameController:
                 (r, c) for r in range(self.board.rows) for c in range(self.board.cols)
                 if self.board.cell_list[r][c].is_mine and (r, c) != (row, col)
             ]  # list excluding the clicked mine cell
-            self._reveal_mines_with_delay([(row, col)] + mine_positions)  # "+" concatenates both into one tuple list
+            delay = 200 // self.view.difficulty.value
+            self._reveal_mines_with_delay([(row, col)] + mine_positions, delay)  # "+" concatenates both into one tuple list
             self.view.timer_running = False
-            self.handle_game_end("You are a looser")
+            self.handle_game_end("You are a looser!")
         else:
             self.reveal_cells(row, col)
             self.check_win_condition()
 
-    def _reveal_mines_with_delay(self, bomb_positions: list[tuple[int, int]], delay: int = 350) -> None:
+    def _reveal_mines_with_delay(self, bomb_positions: list[tuple[int, int]], delay: int = 200) -> None:
         """
         Reveal bomb cells one by one with a delay.
 
         :param bomb_positions: list[tuple[int, int]] - List of bomb cell positions.
         :param delay: int - Delay in milliseconds between revealing each bomb.
         """
-        if not bomb_positions:
+        if not bomb_positions or not self.is_revealing_mines:
             self.is_revealing_mines = False
             return
+        
+        delay = int(delay * 0.99)
+
         row, col = bomb_positions.pop(0)
-        self.view.update_cell(row, col, "💣", is_revealed=True)
+        self.view.update_cell(row, col, "💣", is_revealed=True, is_mine=True)
         self.view.grid_buttons[row][col].configure(fg_color="#8B0000")  # Dark red background
         self.view.after(delay, lambda: self._reveal_mines_with_delay(bomb_positions, delay))
 
@@ -110,13 +114,15 @@ class GameController:
             cell.is_flagged = False
             cell.is_unsure = True
             self.view.flags_left += 1
+            # self.view.update_cell(row, col, "?")
             self.view.update_cell(row, col, "?", right_click_handler=self.handle_cell_right_click)
         elif cell.is_unsure:
             cell.is_unsure = False
-            self.view.update_cell(row, col, "", right_click_handler=self.handle_cell_right_click)
+            self.view.update_cell(row, col, "")
         else:
             cell.is_flagged = True
             self.view.flags_left -= 1
+            # self.view.update_cell(row, col, "🚩")
             self.view.update_cell(row, col, "🚩", right_click_handler=self.handle_cell_right_click)
 
         self.view.flags_label.configure(text=f"{self.view.flags_left:02d}")

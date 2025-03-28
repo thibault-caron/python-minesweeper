@@ -34,8 +34,16 @@ class GameView(ctk.CTk):
         self.flags_label.grid(row=0, column=0, padx=10, sticky="ew")
 
         self.reset_button = ctk.CTkButton(
-            self.menu_frame, text="🔄", command=None, width=40, font=("Arial", 22, "bold")
-        )  # Set later in create_menu
+            self.menu_frame,
+            text="🔄",
+            command=None,
+            width=40,
+            font=("Arial", 22, "bold"),
+            fg_color=("gray70", "gray30"),
+            hover_color=("gray85", "gray45"),
+            border_width=3,
+            border_color=("gray50", "gray20")
+        )
         self.reset_button.grid(row=0, column=1, padx=10, sticky="ew")
 
         self.timer_label = ctk.CTkLabel(self.menu_frame, text=f"{self.timer_value}")
@@ -45,10 +53,13 @@ class GameView(ctk.CTk):
             self.menu_frame,
             values=[d.name for d in Difficulty],
             command=None,  # Set later in create_menu
-            width=100
+            width=100,
+            fg_color=("gray70", "gray30"),
+            button_color=("gray70", "gray30"),
+            button_hover_color=("gray85", "gray45"),
         )
         self.difficulty_menu.set(self.difficulty.name)
-        self.difficulty_menu.grid(row=0, column=3, padx=10, sticky="ew")
+        self.difficulty_menu.grid(row=0, column=3, padx=5, sticky="ew")
 
     def clear_view(self) -> None:
         """
@@ -122,41 +133,52 @@ class GameView(ctk.CTk):
         button = self.grid_buttons[row][col]
 
         if is_revealed:
-            # Ensure text is treated as a string
-            text = str(text)
 
-            # Determine text color based on the text value
-            if text.isdigit() and 1 <= int(text) <= 8:
-                red_intensity = int(255 - (int(text) - 1) * (255 / 7))  # Gradation from light red to dark red
-                text_color = f"#{red_intensity:02x}0000"  # Convert to hex color
-            else:
-                text_color="#8d8d8d"
-
+            # No text color change version
             button.configure(
-                text="",
+                text=text,
+                font=("Arial", 14, "bold"),
                 state="disabled",
                 fg_color=("gray80", "gray20"),  # (Dark mode, Light mode)
                 border_width=0
             )
 
-            # Add a label inside the button to control the text color
-            if is_mine == False:
-                label = ctk.CTkLabel(
-                    button,
-                    text=text,
-                    text_color=text_color,
-                    fg_color=("gray80", "gray20"),
-                    font=("Arial", 14, "bold")
-                )
-            else: 
-                label = ctk.CTkLabel(
-                    button,
-                    text=text,
-                    text_color=text_color,
-                    fg_color=("#8B0000"),
-                    font=("Arial", 14, "bold")
-                )
-            label.place(relx=0.5, rely=0.5, anchor="center")
+            # # Text color change version (changing text_color in configure method doesn't seem to work?)
+            # # Ensure text is treated as a string
+            # text = str(text)
+
+            # # Determine text color based on the text value
+            # if text.isdigit() and 1 <= int(text) <= 8:
+            #     red_intensity = int(255 - (int(text) - 1) * (255 / 7))  # Gradation from light red to dark red
+            #     text_color = f"#{red_intensity:02x}0000"  # Convert to hex color
+            # else:
+            #     text_color="#8d8d8d"
+
+            # button.configure(
+            #     text="",
+            #     state="disabled",
+            #     fg_color=("gray80", "gray20"),  # (Dark mode, Light mode)
+            #     border_width=0
+            # )
+
+            # # Add a label inside the button to control the text color
+            # if is_mine == False:
+            #     label = ctk.CTkLabel(
+            #         button,
+            #         text=text,
+            #         text_color=text_color,
+            #         fg_color=("gray80", "gray20"),
+            #         font=("Arial", 14, "bold")
+            #     )
+            # else: 
+            #     label = ctk.CTkLabel(
+            #         button,
+            #         text=text,
+            #         text_color=text_color,
+            #         fg_color=("#8B0000"),
+            #         font=("Arial", 14, "bold")
+            #     )
+            # label.place(relx=0.5, rely=0.5, anchor="center")
         else:
             button.configure(
                 text=text,

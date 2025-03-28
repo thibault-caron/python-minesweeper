@@ -45,17 +45,26 @@ class GameGrid:
         :param first_click_col: int - Column index of the first clicked cell.
         """
         self.__first_click = (first_click_row, first_click_col)
-        excluded_positions: Set[Tuple[int, int]] = {(first_click_row, first_click_col)}
-        mine_positions = set()
+        excluded_positions = {(first_click_row, first_click_col)}
+        mine_positions = self._generate_mine_positions(excluded_positions)
 
+        for row, col in mine_positions:
+            self.__cell_list[row][col].is_mine = True
+
+    def _generate_mine_positions(self, excluded_positions: Set[Tuple[int, int]]) -> Set[Tuple[int, int]]:
+        """
+        Generate random mine positions, excluding specific positions.
+
+        :param excluded_positions: Set[Tuple[int, int]] - Positions to exclude from mine placement.
+        :return: Set[Tuple[int, int]] - Set of mine positions.
+        """
+        mine_positions = set()
         while len(mine_positions) < self.__mines:
             row = random.randint(0, self.__rows - 1)
             col = random.randint(0, self.__cols - 1)
             if (row, col) not in excluded_positions and (row, col) not in mine_positions:
                 mine_positions.add((row, col))
-
-        for row, col in mine_positions:
-            self.__cell_list[row][col].is_mine = True
+        return mine_positions
 
     def _calculate_adjacent_mines(self) -> None:
         """

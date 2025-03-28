@@ -120,7 +120,7 @@ class GameView(ctk.CTk):
                 button.grid(row=row, column=col, padx=1, pady=1)
                 self.grid_buttons[row][col] = button  # Store button in 2D list
 
-    def update_cell(self, row: int, col: int, text: str, is_revealed: bool = False, is_mine = False, right_click_handler: Callable[[int, int], None] = None) -> None:
+    def update_cell(self, row: int, col: int, text: str, is_revealed: bool = False, is_mine: bool = False, right_click_handler: Callable[[int, int], None] = None) -> None:
         """
         Update the appearance of a cell on the game board.
 
@@ -128,57 +128,20 @@ class GameView(ctk.CTk):
         :param col: int - Column index of the cell.
         :param text: str - Text to display on the cell.
         :param is_revealed: bool - Whether the cell is revealed.
+        :param is_mine: bool - Whether the cell is a mine.
         :param right_click_handler: Callable[[int, int], None] - Function to handle right-click events.
         """
         button = self.grid_buttons[row][col]
 
         if is_revealed:
-
-            # No text color change version
+            fg_color = "#8B0000" if is_mine else ("gray80", "gray20")  # Dark red for mines
             button.configure(
                 text=text,
                 font=("Arial", 14, "bold"),
                 state="disabled",
-                fg_color=("gray80", "gray20"),  # (Dark mode, Light mode)
+                fg_color=fg_color,
                 border_width=0
             )
-
-            # # Text color change version (changing text_color in configure method doesn't seem to work?)
-            # # Ensure text is treated as a string
-            # text = str(text)
-
-            # # Determine text color based on the text value
-            # if text.isdigit() and 1 <= int(text) <= 8:
-            #     red_intensity = int(255 - (int(text) - 1) * (255 / 7))  # Gradation from light red to dark red
-            #     text_color = f"#{red_intensity:02x}0000"  # Convert to hex color
-            # else:
-            #     text_color="#8d8d8d"
-
-            # button.configure(
-            #     text="",
-            #     state="disabled",
-            #     fg_color=("gray80", "gray20"),  # (Dark mode, Light mode)
-            #     border_width=0
-            # )
-
-            # # Add a label inside the button to control the text color
-            # if is_mine == False:
-            #     label = ctk.CTkLabel(
-            #         button,
-            #         text=text,
-            #         text_color=text_color,
-            #         fg_color=("gray80", "gray20"),
-            #         font=("Arial", 14, "bold")
-            #     )
-            # else: 
-            #     label = ctk.CTkLabel(
-            #         button,
-            #         text=text,
-            #         text_color=text_color,
-            #         fg_color=("#8B0000"),
-            #         font=("Arial", 14, "bold")
-            #     )
-            # label.place(relx=0.5, rely=0.5, anchor="center")
         else:
             button.configure(
                 text=text,

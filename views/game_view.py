@@ -100,7 +100,7 @@ class GameView(ctk.CTk):
                 button.grid(row=row, column=col, padx=2, pady=2)
                 self.grid_buttons[row][col] = button  # Store button in 2D list
 
-    def update_cell(self, row: int, col: int, text: str, is_revealed: bool = False) -> None:
+    def update_cell(self, row: int, col: int, text: str, is_revealed: bool = False, right_click_handler: Callable[[int, int], None] = None) -> None:
         """
         Update the appearance of a cell on the game board.
 
@@ -108,6 +108,7 @@ class GameView(ctk.CTk):
         :param col: int - Column index of the cell.
         :param text: str - Text to display on the cell.
         :param is_revealed: bool - Whether the cell is revealed.
+        :param right_click_handler: Callable[[int, int], None] - Function to handle right-click events.
         """
         button = self.grid_buttons[row][col]
         if is_revealed:
@@ -122,15 +123,18 @@ class GameView(ctk.CTk):
                 text=text,
                 font=("Arial", 14, "bold")
             )
+            # Re-bind the method so that the new button text is also bound by it
+            if right_click_handler:
+                button.bind("<Button-3>", lambda event: right_click_handler(row, col))
 
-    def end_game_message(self, message:str) -> None:
+    def end_game_message(self, message: str) -> None:
         """
         Display an end game message.
 
-        :param message: str - what you did
+        :param message: str - The message to display.
         """
-        game_over_label = ctk.CTkLabel(self.grid_frame, text=f"You {message}!", font=("Arial", 24))
-        game_over_label.grid(row=0, column=0, columnspan=len(self.grid_buttons[0]), pady=10)
+        game_over_label = ctk.CTkLabel(self.grid_frame, text=message, font=("Arial", 24))
+        game_over_label.grid(row=0, column=0, rowspan=len(self.grid_buttons), columnspan=len(self.grid_buttons[0]), pady=10)
 
     def increment_timer(self) -> None:
         """

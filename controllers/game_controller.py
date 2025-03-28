@@ -63,7 +63,7 @@ class GameController:
             ]  # list excluding the clicked mine cell
             self._reveal_mines_with_delay([(row, col)] + mine_positions)  # "+" concatenates both into one tuple list
             self.view.timer_running = False
-            self.handle_game_end("Are a looser")  # Call the new method
+            self.handle_game_end("You are a looser")
         else:
             self.reveal_cells(row, col)
             self.check_win_condition()
@@ -75,7 +75,7 @@ class GameController:
         :param bomb_positions: list[tuple[int, int]] - List of bomb cell positions.
         :param delay: int - Delay in milliseconds between revealing each bomb.
         """
-        if not bomb_positions or not self.is_revealing_mines:  # Stop if revealing is stopped
+        if not bomb_positions:
             self.is_revealing_mines = False
             return
         row, col = bomb_positions.pop(0)
@@ -92,7 +92,7 @@ class GameController:
                 if not cell.is_mine and not cell.is_revealed:
                     return
         self.view.timer_running = False
-        self.handle_game_end("Are the best!!")
+        self.handle_game_end("You are the best!!")
 
     def handle_cell_right_click(self, row: int, col: int) -> None:
         """
@@ -102,20 +102,23 @@ class GameController:
         :param col: int - Column index of the clicked cell.
         """
         cell = self.board.cell_list[row][col]
+
         if cell.is_revealed:
             return
+
         if cell.is_flagged:
             cell.is_flagged = False
             cell.is_unsure = True
             self.view.flags_left += 1
-            self.view.update_cell(row, col, "?")
+            self.view.update_cell(row, col, "?", right_click_handler=self.handle_cell_right_click)
         elif cell.is_unsure:
             cell.is_unsure = False
-            self.view.update_cell(row, col, "")
+            self.view.update_cell(row, col, "", right_click_handler=self.handle_cell_right_click)
         else:
             cell.is_flagged = True
             self.view.flags_left -= 1
-            self.view.update_cell(row, col, "🚩")
+            self.view.update_cell(row, col, "🚩", right_click_handler=self.handle_cell_right_click)
+
         self.view.flags_label.configure(text=f"{self.view.flags_left:02d}")
 
     def reveal_cells(self, row: int, col: int) -> None:

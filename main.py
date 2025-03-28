@@ -8,7 +8,7 @@ def main() -> None:
     """
     view = GameView()
     controller = GameController(view)
-    controller.initialize_game(Difficulty.HARD)
+    controller.initialize_game(Difficulty.EASY)
     view.mainloop()
 
 if __name__ == "__main__":

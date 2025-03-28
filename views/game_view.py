@@ -65,10 +65,20 @@ class GameView(ctk.CTk):
         :param reset_game: Callable[[Difficulty], None] - Callback function to reset the game.
         """
         self.difficulty_menu.configure(
-            command=lambda difficulty: reset_game(Difficulty[difficulty])  # Convert string to Difficulty enum
+            command=lambda difficulty: self._update_difficulty_and_reset(difficulty, reset_game)
         )
-        self.reset_button.configure(command=lambda: reset_game())
+        self.reset_button.configure(command=lambda: reset_game(self.difficulty))  # Pass current difficulty
         self.flags_label.configure(text=f"{self.flags_left}")
+
+    def _update_difficulty_and_reset(self, difficulty: str, reset_game: Callable[[Difficulty], None]) -> None:
+        """
+        Update the difficulty and reset the game.
+
+        :param difficulty: str - The new difficulty selected from the menu.
+        :param reset_game: Callable[[Difficulty], None] - Callback function to reset the game.
+        """
+        self.difficulty = Difficulty[difficulty]
+        reset_game(self.difficulty)
 
     def create_board(self, rows: int, cols: int, click_handler: Callable[[int, int], None], right_click_handler: Callable[[int, int], None]) -> None:
         """
@@ -113,27 +123,14 @@ class GameView(ctk.CTk):
                 font=("Arial", 14, "bold")
             )
 
-    def show_game_over(self) -> None:
+    def end_game_message(self, message:str) -> None:
         """
-        Display a game over message and disable all buttons on the board.
-        """
-        for row in self.grid_buttons:
-            for button in row:
-                button.configure(state="disabled")
-                button.unbind("<Button-3>")
-        game_over_label = ctk.CTkLabel(self.grid_frame, text="Game Over!", font=("Arial", 24))
-        game_over_label.grid(row=0, column=0, columnspan=len(self.grid_buttons[0]), pady=10)
+        Display an end game message.
 
-    def show_game_won(self) -> None:
+        :param message: str - what you did
         """
-        Display a game won message and disable all buttons on the board.
-        """
-        for row in self.grid_buttons:
-            for button in row:
-                button.configure(state="disabled")
-                button.unbind("<Button-3>")
-        game_won_label = ctk.CTkLabel(self.grid_frame, text="You Won!", font=("Arial", 24))
-        game_won_label.grid(row=0, column=0, columnspan=len(self.grid_buttons[0]), pady=10)
+        game_over_label = ctk.CTkLabel(self.grid_frame, text=f"You {message}!", font=("Arial", 24))
+        game_over_label.grid(row=0, column=0, columnspan=len(self.grid_buttons[0]), pady=10)
 
     def increment_timer(self) -> None:
         """

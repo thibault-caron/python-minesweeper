@@ -1,6 +1,6 @@
 from models.game_grid import GameGrid
 from views.game_view import GameView
-from constants import Difficulty, difficulty_settings
+from constants.game_settings import Difficulty, difficulty_settings
 
 class GameController:
     def __init__(self, view: GameView) -> None:
@@ -148,7 +148,6 @@ class GameController:
 
         row, col = bomb_positions.pop(0)
         self.view.update_cell(row, col, "💣", is_revealed=True, is_mine=True)
-        self.view.grid_buttons[row][col].configure(fg_color="#8B0000")  # Dark red background
         self.view.after(delay, lambda: self._reveal_mines_with_delay(bomb_positions, delay))
 
     def handle_game_end(self, message: str) -> None:

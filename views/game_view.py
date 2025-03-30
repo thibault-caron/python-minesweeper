@@ -1,6 +1,7 @@
 import customtkinter as ctk
 from typing import Callable
-from constants import Difficulty
+from constants.game_settings import Difficulty
+from constants.ui_settings import *
 
 class GameView(ctk.CTk):
     """
@@ -38,11 +39,11 @@ class GameView(ctk.CTk):
             text="🔄",
             command=None,
             width=40,
-            font=("Arial", 22, "bold"),
-            fg_color=("gray70", "gray30"),
-            hover_color=("gray85", "gray45"),
+            font=FONT_LARGE,
+            fg_color=BUTTON_BG,
+            hover_color=BUTTON_HOVER,
             border_width=3,
-            border_color=("gray50", "gray20")
+            border_color=BUTTON_BORDER
         )
         self.reset_button.grid(row=0, column=1, padx=10, sticky="ew")
 
@@ -54,9 +55,9 @@ class GameView(ctk.CTk):
             values=[d.name for d in Difficulty],
             command=None,  # Set later in create_menu
             width=100,
-            fg_color=("gray70", "gray30"),
-            button_color=("gray70", "gray30"),
-            button_hover_color=("gray85", "gray45"),
+            fg_color=BUTTON_BG,
+            button_color=BUTTON_BG,
+            button_hover_color=BUTTON_HOVER,
         )
         self.difficulty_menu.set(self.difficulty.name)
         self.difficulty_menu.grid(row=0, column=3, padx=5, sticky="ew")
@@ -106,14 +107,14 @@ class GameView(ctk.CTk):
                 button = ctk.CTkButton(
                     self.grid_frame,
                     text="",
-                    width=32,
-                    height=32,
-                    fg_color="#c0c0c0",
-                    hover_color="#d9d9d9",
-                    text_color="#808080",
+                    width=CELL_WIDTH,
+                    height=CELL_HEIGHT,
+                    fg_color=CELL_BG,
+                    hover_color=CELL_HOVER,
+                    text_color=CELL_TEXT,
                     corner_radius=0,
                     border_width=3,
-                    border_color="#a6a6a6",
+                    border_color=CELL_BORDER,
                     command=lambda r=row, c=col: click_handler(r, c)
                 )
                 button.bind("<Button-3>", lambda event, r=row, c=col: right_click_handler(r, c))
@@ -134,10 +135,10 @@ class GameView(ctk.CTk):
         button = self.grid_buttons[row][col]
 
         if is_revealed:
-            fg_color = "#8B0000" if is_mine else ("gray80", "gray20")  # Dark red for mines
+            fg_color = MINE_BG if is_mine else NO_MINE_BG  # Dark red for mines
             button.configure(
                 text=text,
-                font=("Arial", 14, "bold"),
+                font=FONT_MEDIUM,
                 state="disabled",
                 fg_color=fg_color,
                 border_width=0
@@ -145,7 +146,7 @@ class GameView(ctk.CTk):
         else:
             button.configure(
                 text=text,
-                font=("Arial", 14, "bold")
+                font=FONT_MEDIUM
             )
         # Re-bind the method so that the new button text is also bound by it
         if right_click_handler:

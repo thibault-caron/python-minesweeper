@@ -1,7 +1,8 @@
 import customtkinter as ctk
 from typing import Callable
-from settings.difficulty import Difficulty
+from settings.difficulty import Difficulty, CustomDifficulty  # Import CustomDifficulty
 from settings.ui_settings import *
+from tkinter.simpledialog import askinteger  # Import for custom input dialogs
 
 class GameView(ctk.CTk):
     """
@@ -14,12 +15,12 @@ class GameView(ctk.CTk):
         self.grid_buttons = []  # 2D list
         self.timer_value = 0
         self.timer_running = False
-        self.flags_left = 0
+        self.mine_count = 0
         self.difficulty = Difficulty.EASY
 
         # Create main layout containers
         self.menu_frame = ctk.CTkFrame(self, height=150)
-        self.menu_frame.pack(fill="x", side="top", pady=10)
+        self.menu_frame.pack(fill="x", side="top", pady=5)
 
         self.grid_frame = ctk.CTkFrame(self)
         self.grid_frame.pack(fill="both", expand=True, side="top")
@@ -31,30 +32,30 @@ class GameView(ctk.CTk):
         self.menu_frame.columnconfigure(3, weight=0)
 
         # Initialize menu widgets
-        self.flags_label = ctk.CTkLabel(self.menu_frame, text=f"{self.flags_left}")
-        self.flags_label.grid(row=0, column=0, padx=10, sticky="ew")
+        self.flags_label = ctk.CTkLabel(self.menu_frame, text=f"MC: {self.mine_count:03d}")
+        self.flags_label.grid(row=0, column=0, padx=5, sticky="ew")
 
         self.reset_button = ctk.CTkButton(
             self.menu_frame,
             text="🔄",
             command=None,
-            width=40,
+            width=32,
             font=FONT_LARGE,
             fg_color=BUTTON_BG,
             hover_color=BUTTON_HOVER,
             border_width=3,
             border_color=BUTTON_BORDER
         )
-        self.reset_button.grid(row=0, column=1, padx=10, sticky="ew")
+        self.reset_button.grid(row=0, column=1, padx=5, sticky="ew")
 
         self.timer_label = ctk.CTkLabel(self.menu_frame, text=f"{self.timer_value}")
-        self.timer_label.grid(row=0, column=2, padx=10, sticky="ew")
+        self.timer_label.grid(row=0, column=2, padx=5, sticky="ew")
 
         self.difficulty_menu = ctk.CTkOptionMenu(
             self.menu_frame,
             values=[d.name for d in Difficulty],
             command=None,  # Set later in create_menu
-            width=100,
+            width=90,
             fg_color=NO_MINE_BG,
             button_color=BUTTON_BG,
             button_hover_color=BUTTON_HOVER,
@@ -76,11 +77,34 @@ class GameView(ctk.CTk):
 
         :param reset_game: Callable[[Difficulty], None] - Callback function to reset the game.
         """
+        def handle_difficulty_change(difficulty: str) -> None:
+            if difficulty != "CUSTOM":
+                self._update_difficulty_and_reset(difficulty, reset_game)
+            else:
+                self._prompt_custom_settings(reset_game)
+
         self.difficulty_menu.configure(
-            command=lambda difficulty: self._update_difficulty_and_reset(difficulty, reset_game)
+            command=handle_difficulty_change
         )
         self.reset_button.configure(command=lambda: reset_game(self.difficulty))  # Pass current difficulty
-        self.flags_label.configure(text=f"{self.flags_left}")
+        self.flags_label.configure(text=f"MC: {self.mine_count:03d}")
+
+    def _prompt_custom_settings(self, reset_game: Callable[[Difficulty], None]) -> None:
+        """
+        Prompt the user to input custom settings for rows, columns, and mines.
+
+        :param reset_game: Callable[[Difficulty], None] - Callback function to reset the game.
+        """
+        rows = askinteger("Custom Difficulty", "Enter number of rows (5-22):", minvalue=5, maxvalue=22)
+        cols = askinteger("Custom Difficulty", "Enter number of columns (5-45):", minvalue=5, maxvalue=45)
+        mines = askinteger("Custom Difficulty", "Enter number of mines (1-499):", minvalue=1, maxvalue=499)
+
+        if rows and cols and mines:
+            max_mines = rows * cols - 1
+            if mines > max_mines:
+                mines = max_mines  # Ensure mines do not exceed available cells
+            CustomDifficulty.set_settings(rows, cols, mines)  # Use CustomDifficulty to store settings
+            self._update_difficulty_and_reset("CUSTOM", reset_game)
 
     def _update_difficulty_and_reset(self, difficulty: str, reset_game: Callable[[Difficulty], None]) -> None:
         """
@@ -159,7 +183,7 @@ class GameView(ctk.CTk):
 
         :param message: str - The message to display.
         """
-        game_over_label = ctk.CTkLabel(self.grid_frame, text=message, font=("Arial", 24))
+        game_over_label = ctk.CTkLabel(self.grid_frame, text=message, font=FONT_MESSAGE)
         game_over_label.grid(row=0, column=0, rowspan=len(self.grid_buttons), columnspan=len(self.grid_buttons[0]), pady=10)
 
     def increment_timer(self) -> None:
@@ -168,7 +192,7 @@ class GameView(ctk.CTk):
         """
         if self.timer_running:
             self.timer_value += 1
-            self.timer_label.configure(text=f"Timer: {self.timer_value:03d}")
+            self.timer_label.configure(text=f"T: {self.timer_value:03d}")
             self.after(1000, self.increment_timer)
 
     def reset_timer(self) -> None:
@@ -177,4 +201,4 @@ class GameView(ctk.CTk):
         """
         self.timer_running = False
         self.timer_value = 0
-        self.timer_label.configure(text=f"Timer: {self.timer_value:03d}")
+        self.timer_label.configure(text=f"T: {self.timer_value:03d}")

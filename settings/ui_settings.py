@@ -13,6 +13,7 @@ BUTTON_BORDER = ("gray50", "gray20")
 # Fonts
 FONT_LARGE = ("Arial", 22, "bold")
 FONT_MEDIUM = ("Arial", 14, "bold")
+FONT_MESSAGE = ("Arial", 26, "bold")
 
 # Dimensions
 CELL_WIDTH = 32

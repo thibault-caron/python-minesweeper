@@ -25,7 +25,7 @@ class GameController:
 
         rows, cols, mines = difficulty.get_settings()
         self.board = GameGrid(rows, cols, mines)
-        self.view.flags_left = mines
+        self.view.mine_count = mines
         self.view.difficulty = difficulty
 
         # Pass the initialize_game method as reset_game to create_menu
@@ -80,17 +80,17 @@ class GameController:
         if cell.is_flagged:
             cell.is_flagged = False
             cell.is_unsure = True
-            self.view.flags_left += 1
+            self.view.mine_count += 1
             self.view.update_cell(row, col, "?", right_click_handler=self.handle_cell_right_click)
         elif cell.is_unsure:
             cell.is_unsure = False
             self.view.update_cell(row, col, "")
         else:
             cell.is_flagged = True
-            self.view.flags_left -= 1
+            self.view.mine_count -= 1
             self.view.update_cell(row, col, "🚩", right_click_handler=self.handle_cell_right_click)
 
-        self.view.flags_label.configure(text=f"{self.view.flags_left:02d}")
+        self.view.flags_label.configure(text=f"MC: {self.view.mine_count:03d}")
 
     def reveal_cells(self, row: int, col: int) -> None:
         """

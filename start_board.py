@@ -2,9 +2,9 @@ import tkinter as tk
 import configure as cfg
 import emoji
 import random
-from Cell import Cell
+from cell import Cell
 
-class Grid:
+class StartBoard:
     def __init__(self, parent, rows, cols):
         self.parent = parent
         self.rows = rows
@@ -24,6 +24,10 @@ class Grid:
                 cell.cell_button.grid(row=row, column=col)
                 row_cells.append(cell)
             self.cells.append(row_cells) 
+
+    def display_grid(self):
+        """create the graphique grid"""
+        
 
 
 

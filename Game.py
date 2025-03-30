@@ -1,9 +1,14 @@
+import sys
+sys.path.append("c:\\Users\\gravy\\Desktop\\Minesweeper\\python-minesweeper\\")
+from carotte import Cell
+
+
 import tkinter as tk
 import configure as cfg
-from Grid import Grid
 import emoji
 
 class Game:
+
     def __init__(self):
         """initialize the game"""
         self.root = tk.Tk()
@@ -16,24 +21,12 @@ class Game:
         self.rows = level_data["row"]
         self.cols = level_data["col"]
         self.num_mines = level_data["mines"]
+        self.cells = []
 
-        
-
-        self.create_screen()
-
-
-
-    def get_level_data(self):
-        """return the informations (rows, cols, num_mines) for the level"""
-        level_data = self.level(self.current_level)
-        return level_data
-
-    def create_screen(self):
-        """create the game screen"""
         # the screen size is dynamically based on the grid size
         cell_size = 30
-        screen_width = self.cols * cell_size + 50
-        screen_height = self.rows * cell_size + 500
+        screen_width = self.cols * cell_size 
+        screen_height = self.rows * cell_size + 100
         self.root.geometry(f"{screen_width}x{screen_height}")
         self.root.configure(bg = cfg.BACKGROUNG_COLOR)
         self.root.resizable(False, False)
@@ -43,7 +36,7 @@ class Game:
             self.root, 
             bg = "red",
             width = screen_width,
-            height = 450
+            height = 100
         )
         top_frame.place(x=0, y=0)
 
@@ -51,48 +44,69 @@ class Game:
             self.root, 
             bg = "green",
             width = screen_width,
-            height = screen_height - 450
+            height = screen_height - 100
         )
-        bottom_frame.place(x=0, y=450)
+        bottom_frame.place(x=0, y=100)
 
-        # create the button to refresh the game 
+        # create the refresh button
         refresh_button = tk.Button(
             top_frame,
             bg = "blue",
-            text = f"{emoji.emojize(":slightly_smiling_face:")}",  #	:face_with_crossed-out_eyes:  /  	:smiling_face_with_sunglasses: 
-            width=3,
-            height=1
-            command=self.refresh_game
+            text=f"{emoji.emojize(':slightly_smiling_face:')}",
+            font= ("Helvetica", 20),
+            command=self.refresh_game,
+            anchor="center", 
+            compound="center"
             )
-        refresh_button.place(x=((screen_width-50)//2), y=300)
+        refresh_button.place(x=(screen_width // 2)-25, y=50, width=50, height=50)
 
         # create the label to display the number of flags
         flags_label = tk.Label(
             top_frame,
-            text=f"FLAGS : {self.num_mines}"
-            font=("Helvetica", 20)
+            text=f"FLAGS : {self.num_mines}",
+            font=("Helvetica", 10)
         )
-        flags_label.place(x=25, y=25)
+        flags_label.place(x=5, y=5)
+
+        self.create_cells(bottom_frame, cell_size)
 
         # create the menu to choose the level
 
         # create the label to display the timer
 
-        # display the grid
-        self.create_grid(bottom_frame)
+
+    def get_level_data(self):
+        """return the informations (rows, cols, num_mines) for the level"""
+        level_data = self.level(self.current_level)
+        return level_data
+    
+    def create_cells(self, parent, button_size):
+        """create the grid of cells"""
+        self.cells = []
+
+        for row in range(self.rows):
+            row_cells = []
+            for col in range(self.cols):
+                # create one cell
+                cell = Cell(location=(row, col))
+                cell.create_button(parent)
+                cell.cell_button.place(
+                    x=col * button_size, 
+                    y= row * button_size,
+                    width=button_size,
+                    height=button_size
+                    )
+                row_cells.append(cell)
+            self.cells.append(row_cells) 
 
 
-
-    def create_grid(self, parent):
-        """create and display grid in the bottom frame"""
-        grid = Grid(parent, self.rows, self.cols)
 
 
 
 
     def refresh_game(self):
         """reset the game"""
-        for widget in 
+        pass
 
 
 

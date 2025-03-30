@@ -3,7 +3,7 @@ import configure as cfg
 import random # attention : importer que ce ce qui est nécessaire pour ne pas surcharger le programme
 from enum import Enum
 import emoji
-from Game import Game
+from game import Game
 
 class CellState(Enum):
     """Enum for cell state"""
@@ -33,9 +33,7 @@ class Cell:
     def create_button(self, parent):
         """create a button"""
         self.cell_button = tk.Button(
-            parent, 
-            width=5, 
-            height=2, 
+            parent,
             bg=cfg.BUTTON_COLOR)
         self.cell_button.bind("<Button-1>", self.left_click_action)
         self.cell_button.bind("<Button-3>", self.right_click_action)

@@ -1,6 +1,6 @@
 from views.game_view import GameView
 from controllers.game_controller import GameController
-from constants.game_settings import Difficulty
+from settings.difficulty import Difficulty
 
 def main() -> None:
     """

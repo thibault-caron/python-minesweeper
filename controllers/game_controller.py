@@ -1,6 +1,6 @@
 from models.game_grid import GameGrid
 from views.game_view import GameView
-from constants.game_settings import Difficulty, difficulty_settings
+from settings.difficulty import Difficulty
 
 class GameController:
     def __init__(self, view: GameView) -> None:
@@ -23,7 +23,7 @@ class GameController:
         self.view.reset_timer()
         self.view.clear_view()
 
-        rows, cols, mines = difficulty_settings[difficulty]  # imported from constants.py
+        rows, cols, mines = Difficulty.get_settings(difficulty)  # Use the new method
         self.board = GameGrid(rows, cols, mines)
         self.view.flags_left = mines
         self.view.difficulty = difficulty
@@ -81,7 +81,6 @@ class GameController:
             cell.is_flagged = False
             cell.is_unsure = True
             self.view.flags_left += 1
-            # self.view.update_cell(row, col, "?")
             self.view.update_cell(row, col, "?", right_click_handler=self.handle_cell_right_click)
         elif cell.is_unsure:
             cell.is_unsure = False
@@ -89,7 +88,6 @@ class GameController:
         else:
             cell.is_flagged = True
             self.view.flags_left -= 1
-            # self.view.update_cell(row, col, "🚩")
             self.view.update_cell(row, col, "🚩", right_click_handler=self.handle_cell_right_click)
 
         self.view.flags_label.configure(text=f"{self.view.flags_left:02d}")

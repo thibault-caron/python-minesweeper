@@ -1,7 +1,7 @@
 import customtkinter as ctk
 from typing import Callable
-from constants.game_settings import Difficulty
-from constants.ui_settings import *
+from settings.difficulty import Difficulty
+from settings.ui_settings import *
 
 class GameView(ctk.CTk):
     """

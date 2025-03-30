@@ -55,7 +55,7 @@ class GameView(ctk.CTk):
             values=[d.name for d in Difficulty],
             command=None,  # Set later in create_menu
             width=100,
-            fg_color=BUTTON_BG,
+            fg_color=NO_MINE_BG,
             button_color=BUTTON_BG,
             button_hover_color=BUTTON_HOVER,
         )

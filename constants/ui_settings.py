@@ -6,10 +6,9 @@ CELL_BORDER = "#a6a6a6"
 MINE_BG = "#8B0000"
 NO_MINE_BG = ("gray80", "gray20")
 
-BUTTON_BG = ("#c0c0c0", "#505050")
-BUTTON_TEXT = ("#808080", "#f0f0f0")
-BUTTON_HOVER = ("#d9d9d9", "#808080")
-BUTTON_BORDER = ("#a6a6a6", "#303030")
+BUTTON_BG = ("gray70", "gray30")
+BUTTON_HOVER = ("gray85", "gray45")
+BUTTON_BORDER = ("gray50", "gray20")
 
 # Fonts
 FONT_LARGE = ("Arial", 22, "bold")

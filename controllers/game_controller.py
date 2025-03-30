@@ -23,7 +23,7 @@ class GameController:
         self.view.reset_timer()
         self.view.clear_view()
 
-        rows, cols, mines = Difficulty.get_settings(difficulty)  # Use the new method
+        rows, cols, mines = difficulty.get_settings()
         self.board = GameGrid(rows, cols, mines)
         self.view.flags_left = mines
         self.view.difficulty = difficulty

@@ -1,8 +1,8 @@
 import customtkinter as ctk
 from typing import Callable
-from settings.difficulty import Difficulty, CustomDifficulty  # Import CustomDifficulty
+from settings.difficulty import Difficulty
 from settings.ui_settings import *
-from tkinter.simpledialog import askinteger  # Import for custom input dialogs
+from views.custom_difficulty_popup import CustomDifficultyPopup
 
 class GameView(ctk.CTk):
     """
@@ -91,20 +91,14 @@ class GameView(ctk.CTk):
 
     def _prompt_custom_settings(self, reset_game: Callable[[Difficulty], None]) -> None:
         """
-        Prompt the user to input custom settings for rows, columns, and mines.
+        Open a popup to input custom settings for rows, columns, and mines.
 
         :param reset_game: Callable[[Difficulty], None] - Callback function to reset the game.
         """
-        rows = askinteger("Custom Difficulty", "Enter number of rows (5-22):", minvalue=5, maxvalue=22)
-        cols = askinteger("Custom Difficulty", "Enter number of columns (5-45):", minvalue=5, maxvalue=45)
-        mines = askinteger("Custom Difficulty", "Enter number of mines (1-499):", minvalue=1, maxvalue=499)
-
-        if rows and cols and mines:
-            max_mines = rows * cols - 1
-            if mines > max_mines:
-                mines = max_mines  # Ensure mines do not exceed available cells
-            CustomDifficulty.set_settings(rows, cols, mines)  # Use CustomDifficulty to store settings
+        def on_submit():
             self._update_difficulty_and_reset("CUSTOM", reset_game)
+
+        CustomDifficultyPopup(self, on_submit)  # Open the popup
 
     def _update_difficulty_and_reset(self, difficulty: str, reset_game: Callable[[Difficulty], None]) -> None:
         """

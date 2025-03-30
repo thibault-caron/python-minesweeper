@@ -1,5 +1,6 @@
 import customtkinter as ctk
 from settings.difficulty import CustomDifficulty
+from settings.ui_settings import BUTTON_BG, BUTTON_HOVER, BUTTON_BORDER
 from tkinter import messagebox
 
 class CustomDifficultyPopup(ctk.CTkToplevel):
@@ -47,7 +48,15 @@ class CustomDifficultyPopup(ctk.CTkToplevel):
         self.mine_entry.pack(pady=5)
 
         # Submit button
-        self.submit_button = ctk.CTkButton(self, text="Submit", command=self._handle_submit)
+        self.submit_button = ctk.CTkButton(
+            self, 
+            text="Submit", 
+            command=self._handle_submit,
+            fg_color=BUTTON_BG,
+            hover_color=BUTTON_HOVER,
+            border_color=BUTTON_BORDER,
+            border_width=2
+        )
         self.submit_button.pack(pady=10)
 
     def _handle_submit(self):
